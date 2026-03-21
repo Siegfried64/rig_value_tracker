@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Env
+.env
+
+# Data Artifacts
+data/raw/*
+data/bronze/*
+data/silver/*
+data/gold/*
+
+# Keep Folders
+!data/raw/.gitkeep
+!data/bronze/.gitkeep
+!data/silver/.gitkeep
+!data/gold/.gitkeep
+
+# DuckDB
+warehouse/duckdb/*.duckdb
+warehouse/duckdb/*.wal
+
+# dbt
+dbt/pc_prices/target/
+dbt/pc_prices/dbt_packages
+
+# OS/editor
+.DS_Store
+.vscode/
+.idea/
