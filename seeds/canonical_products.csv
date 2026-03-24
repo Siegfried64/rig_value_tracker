@@ -1,0 +1,7 @@
+product_id,category,brand_name,name,tier,capacity_gb,notes
+gpu_rx7800_xt,GPU,AMD,Radeon RX 7800 XT,mid
+gpu_rtx5090,GPU,NVIDIA,GeForce RTX 5090,high
+gpu_rx9070_xt,GPU,AMD,Radeon RX 9070 XT,high
+gpu_B580,GPU,INTEL,Arc B580,budget
+cpu_9_9950_x3d,CPU,AMD,Ryzen 9 9950X3D,high
+cpu_9_7900,CPU,AMD,Ryzen 9 7900,mid
