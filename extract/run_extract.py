@@ -1,8 +1,8 @@
 from bs4 import BeautifulSoup
 import requests
+import pandas as pd
 
-# Replace hardcoded list with logic for extracting source seed records
-products = [{"product_id": "gpu_rtx5090", "category": "GPU", "brand_name": "NVIDIA", "name": "GeForce RTX 5090", "tier": "high"}]
+products = pd.read_csv("/home/siegfried/Projects/rig_value_guide/seeds/source_targets.csv")
 
 def get_soup(url):
     response = requests.get(url)
@@ -28,23 +28,23 @@ def raw_price_extract(soup):
 
     return (dollars.text if dollars else "") + (cents.text if cents else "")
 
-#ToDo - Change hardcoded source to use source seed
-gpu_5090 = "https://www.newegg.com/gigabyte-gv-n5090gaming-oc-32gd-geforce-rtx-5090-32gb-graphics-card-triple-fans/p/N82E16814932761"
+def build_raw_record(product, soup):
+    return {
+        "product_id": product["product_id"],
+        "source_name": product["source_name"],
+        "product_url": product["source_product_url"],
+        "raw_product_id": raw_id_extract(soup),
+        "product_name_raw": raw_name_extract(soup),
+        "price_text_raw": raw_price_extract(soup),
+        "observed_at":""
+            }
 
-# Create dictionary build function in order to loop through all products
-soup = get_soup(gpu_5090)
+records = []
 
-raw_dict = {
-    "raw_product_id": raw_id_extract(soup),
-    "product_name_raw": raw_name_extract(soup),
-    "brand_raw":"",
-    "category_raw":"",
-    "price_text_raw": raw_price_extract(soup),
-    "price_value":"",
-    "currency":"",
-    "availability_raw":"",
-    "product_url": gpu_5090,
-    "observed_at":""
-    }
+for _, product in products.iterrows():
+    soup = get_soup(product["source_product_url"])
+    record = build_raw_record(product, soup)
+    records.append(record)
 
-print(raw_dict)
+raw_df = pd.DataFrame(records)
+print(raw_df)
