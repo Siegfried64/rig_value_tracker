@@ -21,6 +21,7 @@ data/gold/*
 # DuckDB
 warehouse/duckdb/*.duckdb
 warehouse/duckdb/*.wal
+data/duckdb/*
 
 # dbt
 dbt/pc_prices/target/
