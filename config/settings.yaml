@@ -1,0 +1,11 @@
+project:
+  name: rig_value_guide
+
+paths:
+  raw_extract: data/raw
+  duckdb: data/duckdb
+  sql_raw: sql/sql_raw
+  sql_stg: sql/sql_stg
+  logs: logs
+  seeds_source: seeds/source_targets.csv
+
