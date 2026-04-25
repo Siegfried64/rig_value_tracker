@@ -1,15 +1,22 @@
-from bs4 import BeautifulSoup
-import requests
+from pathlib import Path
+
 import pandas as pd
 import pyarrow as pa
-from common.io_utils import generate_timestamp, create_path, write_parquet
+import requests
+from bs4 import BeautifulSoup
+
+from common.config import config
+from common.io_utils import create_path, generate_timestamp, write_parquet
 
 # Constants
-products = pd.read_csv("/home/siegfried/Projects/rig_value_guide/seeds/source_targets.csv")
-base_dir = "/home/siegfried/Projects/rig_value_guide/data/raw/"
-source_name = products["source_name"].iloc[0]
+base_dir = Path(__file__).resolve().parents[1]
+data_dir = base_dir / "data/raw"
+products_path = config["paths"]["seeds_source"]
+products_csv = pd.read_csv(products_path)
+source_name = products_csv["source_name"].iloc[0]
 timestamp = generate_timestamp()
-path = create_path(base_dir, source_name, timestamp)
+parquet_path = create_path(data_dir, source_name, timestamp)
+
 
 # Scrape logic
 def get_soup(url):
@@ -19,14 +26,17 @@ def get_soup(url):
 
     return soup
 
+
 def raw_name_extract(soup):
     raw_name = soup.find("h1", class_="product-title")
     return raw_name.text.strip() if raw_name else None
 
+
 def raw_id_extract(soup):
     raw_id = soup.find("li", class_="is-active")
-# make more robust
+    # make more robust
     return raw_id.text[-15:] if raw_id else None
+
 
 def raw_price_extract(soup):
     price = soup.find("div", class_="price-current")
@@ -37,6 +47,7 @@ def raw_price_extract(soup):
     cents = price.find("sup")
     return (dollars.text if dollars else "") + (cents.text if cents else "")
 
+
 # Output logic
 def build_raw_record(product, soup):
     return {
@@ -46,20 +57,20 @@ def build_raw_record(product, soup):
         "raw_product_id": raw_id_extract(soup),
         "product_name_raw": raw_name_extract(soup),
         "price_text_raw": raw_price_extract(soup),
-        "observed_at": timestamp
-            }
+        "observed_at": timestamp,
+    }
+
 
 records = []
 
-for _, product in products.iterrows():
+for _, product in products_csv.iterrows():
     try:
         soup = get_soup(product["source_product_url"])
         record = build_raw_record(product, soup)
         records.append(record)
 
     except Exception as e:
-        print(f"Error processing {product["product_id"]}: {e}")
+        print(f"Error processing row {product['product_id']}: {e}")
 
 table = pa.Table.from_pylist(records)
-write_parquet(table, path)
-
+write_parquet(table, parquet_path)
