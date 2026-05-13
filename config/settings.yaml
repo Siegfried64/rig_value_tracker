@@ -4,8 +4,8 @@ project:
 paths:
   raw_extract: data/raw
   duckdb: data/duckdb
-  sql_raw: sql/sql_raw
-  sql_stg: sql/sql_stg
+  sql_raw: sql/raw
+  sql_stg: sql/staging
   logs: logs
   seeds_source: seeds/source_targets.csv
 
